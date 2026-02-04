@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale1.0">
+    <title>去哈尔滨看冰雪大世界</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        .instagram-card {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .image-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/5;
+            overflow: hidden;
+        }
+        
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, 
+                rgba(0,0,0,0.9) 0%, 
+                rgba(0,0,0,0.6) 50%, 
+                rgba(0,0,0,0) 100%);
+            padding: 80px 20px 25px;
+        }
+        
+        .text-content {
+            color: white;
+            text-align: center;
+        }
+        
+        .main-text {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.3;
+        }
+        
+        .sub-text {
+            font-size: 20px;
+            color: #87CEEB;
+            font-weight: 500;
+        }
+        
+        .snowflakes {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #262626;
+            font-weight: 600;
+        }
+        
+        .stat-icon {
+            font-size: 20px;
+        }
+        
+        .actions {
+            display: flex;
+            padding: 12px 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: #0095f6;
+            color: white;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        .action-btn:hover {
+            background: #0086d9;
+        }
+        
+        .username {
+            padding: 15px 20px 10px;
+            font-weight: 700;
+            color: #262626;
+            font-size: 15px;
+        }
+        
+        .caption {
+            padding: 0 20px 20px;
+            color: #262626;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .snow-decoration {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 20px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="instagram-card">
+        <div class="image-container">
+            <img src="file:///home/ubuntu/.openclaw/media/inbound/file_1---3b156f89-5b02-4082-afca-b39a53e8b894.jpg" alt="帅气男孩">
+            <div class="snow-decoration">❄️</div>
+            <div class="overlay">
+                <div class="text-content">
+                    <div class="main-text">坐着火车去哈尔滨</div>
+                    <div class="sub-text">要看冰雪大世界啦！✨</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="action-btn">❤️ 点赞</button>
+            <button class="action-btn">💬 评论</button>
+            <button class="action-btn">🚀 分享</button>
+        </div>
+        
+        <div class="username">@帅气的我</div>
+        <div class="caption">
+            期待已久的哈尔滨冰雪大世界！我来啦！❄️❄️❄️<br>
+            <span style="color: #00376b;">#哈尔滨 #冰雪大世界 #旅行 #火车旅行</span>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-icon">❤️</span>
+                <span>2,347</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">💬</span>
+                <span>156</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">🚀</span>
+                <span>89</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
