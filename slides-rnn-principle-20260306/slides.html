@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RNN 原理 - 循环神经网络</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/theme/white.css">
+    <style>
+        .reveal { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; }
+        .reveal h1 { font-size: 2.2em; color: #2c3e50; }
+        .reveal h2 { font-size: 1.5em; color: #34495e; }
+        .reveal h3 { font-size: 1.2em; color: #7f8c8d; }
+        .reveal li { margin: 12px 0; }
+        .formula { 
+            background: #f8f9fa; 
+            padding: 15px 25px; 
+            border-radius: 8px; 
+            font-family: monospace;
+            font-size: 0.85em;
+            margin: 20px 0;
+        }
+        .highlight { color: #e74c3c; font-weight: bold; }
+        .columns { display: flex; gap: 40px; justify-content: center; }
+        .col { flex: 1; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <section>
+                <h1>🔄 RNN 原理</h1>
+                <h3>循环神经网络详解</h3>
+                <p style="color: #95a5a6; margin-top: 40px;">Recurrent Neural Network</p>
+            </section>
+
+            <section>
+                <h2>什么是 RNN？</h2>
+                <ul>
+                    <li><strong>循环神经网络</strong> (Recurrent Neural Network)</li>
+                    <li>专门处理<span class="highlight">序列数据</span>的神经网络</li>
+                    <li>核心特点：拥有<span class="highlight">"记忆"</span>能力</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>RNN 的核心结构</h2>
+                <div class="columns">
+                    <div class="col">
+                        <ul>
+                            <li><strong>输入层</strong>：接收序列中的每个元素</li>
+                            <li><strong>隐藏层</strong>：保存"上下文信息"</li>
+                            <li><strong>输出层</strong>：产生当前时刻的输出</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>工作原理</h2>
+                <ul>
+                    <li>隐藏状态在时间步之间<span class="highlight">传递</span></li>
+                    <li>每个时间步的输出取决于当前输入 <strong>+</strong> 之前的记忆</li>
+                </ul>
+                <div class="formula">
+                    h_t = f(W · h_{t-1} + U · x_t)
+                </div>
+                <p style="font-size: 0.7em; color: #7f8c8d;">h: 隐藏状态 | W, U: 权重矩阵 | x: 输入</p>
+            </section>
+
+            <section>
+                <h2>时间步展开</h2>
+                <ul>
+                    <li>RNN 可以沿时间维度<span class="highlight">"展开"</span></li>
+                    <li>展开后相当于<span class="highlight">多层共享权重</span>的网络</li>
+                    <li>权重在所有时间步<span class="highlight">共享</span> — 这是 RNN 的核心</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>RNN 的类型</h2>
+                <div class="columns">
+                    <div class="col">
+                        <ul>
+                            <li><strong>一对一</strong>：标准神经网络</li>
+                            <li><strong>一对多</strong>：图像描述生成</li>
+                            <li><strong>多对一</strong>：情感分类</li>
+                            <li><strong>多对多</strong>：机器翻译</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>⚠️ 梯度问题</h2>
+                <ul>
+                    <li><strong>梯度消失</strong>：长序列难以学习</li>
+                    <li><strong>梯度爆炸</strong>：训练不稳定</li>
+                </ul>
+                <div class="formula">
+                    BPTT 传播中的<span class="highlight">连乘效应</span>导致
+                </div>
+            </section>
+
+            <section>
+                <h2>经典改进：LSTM</h2>
+                <ul>
+                    <li><strong>长短期记忆网络</strong></li>
+                    <li>引入<span class="highlight">门控机制</span></li>
+                    <li>选择性记住/遗忘信息</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>LSTM 核心门控</h2>
+                <div class="columns">
+                    <div class="col">
+                        <ul>
+                            <li><strong>遗忘门</strong>：决定丢弃什么信息</li>
+                            <li><strong>输入门</strong>：决定存储什么新信息</li>
+                            <li><strong>输出门</strong>：决定输出什么信息</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>经典改进：GRU</h2>
+                <ul>
+                    <li><strong>门控循环单元</strong> (Gated Recurrent Unit)</li>
+                    <li>结构比 LSTM <span class="highlight">更简单</span></li>
+                    <li>合并遗忘门和输入门为<span class="highlight">更新门</span></li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>应用场景</h2>
+                <ul>
+                    <li><strong>自然语言处理</strong>：文本生成、机器翻译</li>
+                    <li><strong>语音识别</strong>：语音转文字</li>
+                    <li><strong>时间序列</strong>：股票预测</li>
+                    <li><strong>视频分析</strong>：动作识别</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>📌 总结</h2>
+                <ul>
+                    <li>RNN 解决了<span class="highlight">序列数据</span>的处理问题</li>
+                    <li>通过隐藏状态传递<span class="highlight">上下文信息</span></li>
+                    <li>LSTM/GRU 解决了<span class="highlight">长序列梯度</span>问题</li>
+                    <li>是深度学习处理序列的<span class="highlight">基础模型</span></li>
+                </ul>
+            </section>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            transition: 'slide',
+            backgroundTransition: 'fade'
+        });
+    </script>
+</body>
+</html>

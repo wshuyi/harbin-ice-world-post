@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国产大模型聚合平台 - AI Models Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        /* Header */
+        header {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #00d4ff;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 150px 20px 100px;
+            text-align: center;
+            background: radial-gradient(ellipse at top, rgba(124, 58, 237, 0.2) 0%, transparent 70%);
+        }
+        
+        .hero h1 {
+            font-size: 56px;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #fff, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 22px;
+            color: #a0aec0;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+        
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 20px 30px;
+            border-radius: 50px;
+            border: 2px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #fff;
+            font-size: 18px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            border-color: #00d4ff;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        /* Stats Section */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            padding: 60px 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            color: #a0aec0;
+            margin-top: 10px;
+        }
+        
+        /* Models Grid */
+        .models-section {
+            padding: 80px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .model-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .model-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(0, 212, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+        
+        .model-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .model-card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .model-card .company {
+            color: #00d4ff;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .model-card p {
+            color: #a0aec0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tag {
+            background: rgba(0, 212, 255, 0.2);
+            color: #00d4ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        
+        .model-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: gap 0.3s;
+        }
+        
+        .model-link:hover {
+            gap: 15px;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 50px 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 20px;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            animation: modalSlide 0.4s ease;
+        }
+        
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .modal-header h2 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 30px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+        
+        .modal-body {
+            padding: 40px;
+        }
+        
+        .modal-section {
+            margin-bottom: 40px;
+        }
+        
+        .modal-section h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            color: #00d4ff;
+        }
+        
+        .modal-section p, .modal-section li {
+            color: #cbd5e0;
+            line-height: 1.8;
+        }
+        
+        .modal-section ul {
+            list-style: none;
+        }
+        
+        .modal-section li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .modal-section li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .feature-item {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .feature-item h4 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        
+        .pricing-card {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(124, 58, 237, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .pricing-card .price {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7c3aed);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(0,0,0,0.3);
+            padding: 60px 20px;
+            text-align: center;
+            margin-top: 100px;
+        }
+        
+        footer p {
+            color: #a0aec0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .stats {
+                gap: 40px;
+            }
+            
+            .models-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo">🤖 AI Models Hub</div>
+            <nav>
+                <ul>
+                    <li><a href="#models">模型列表</a></li>
+                    <li><a href="#about">关于我们</a></li>
+                    <li><a href="#contact">联系我们</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>国产大语言模型聚合平台</h1>
+        <p>汇集最优秀的国产AI大模型，一站式了解、对比、使用<br>开启智能新时代，让AI触手可及</p>
+        
+        <div class="search-box">
+            <input type="text" placeholder="🔍 搜索大模型..." id="searchInput">
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">15+</div>
+                <div class="stat-label">主流大模型</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">10K+</div>
+                <div class="stat-label">开发者使用</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">99.9%</div>
+                <div class="stat-label">服务可用性</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Models Grid -->
+    <section class="models-section" id="models">
+        <h2 class="section-title">🌟 主流国产大模型</h2>
+        
+        <div class="models-grid" id="modelsGrid">
+            <!-- Models will be inserted by JavaScript -->
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer id="contact">
+        <p>国产大模型聚合平台 © 2024 | 让AI技术普惠大众</p>
+        <p style="margin-top: 10px; font-size: 14px;">
+            <a href="#" style="color: #00d4ff;">使用条款</a> · 
+            <a href="#" style="color: #00d4ff;">隐私政策</a> · 
+            <a href="#" style="color: #00d4ff;">联系我们</a>
+        </p>
+    </footer>
+    
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal()">×</button>
+                <h2 id="modalTitle">模型名称</h2>
+                <p id="modalCompany" style="color: #00d4ff;"></p>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be inserted by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Model Data
+        const models = [
+            {
+                id: 'ernie',
+                name: '文心一言',
+                company: '百度',
+                icon: '📚',
+                color: '#3B82F6',
+                description: '百度自主研发的知识增强大语言模型，在中文理解和生成方面表现出色。',
+                features: [
+                    '知识增强：融合百度知识图谱',
+                    '多模态：支持图像、文本、语音',
+                    '中文优化：深厚的中文理解能力',
+                    '场景丰富：覆盖办公、创作、生活等多场景'
+                ],
+                useCases: [
+                    '智能问答和知识检索',
+                    '文案写作和内容创作',
+                    '代码辅助和开发支持',
+                    '多模态理解和生成'
+                ],
+                pricing: '免费基础版 / Pro版本约59.9元/月',
+                link: 'https://yiyan.baidu.com',
+                tips: '建议使用"插件模式"解锁更多能力，如思维导图、PPT生成等'
+            },
+            {
+                id: 'tongyi',
+                name: '通义千问',
+                company: '阿里巴巴',
+                icon: '🐉',
+                color: '#EC4899',
+                description: '阿里云推出的超大规模语言模型，支持多轮对话、多模态理解与生成。',
+                features: [
+                    '超长文本：支持100万字上下文',
+                    '多模态：图像、视频理解能力',
+                    '代码能力：强大的编程辅助',
+                    '企业级：完善的API和部署方案'
+                ],
+                useCases: [
+                    '长文档分析总结',
+                    '多模态内容理解',
+                    '企业级AI应用开发',
+                    '智能客服和知识库'
+                ],
+                pricing: '免费 / API按量计费',
+                link: 'https://tongyi.aliyun.com',
+                tips: '通义千问APP的"全民演唱会"功能很有意思'
+            },
+            {
+                id: 'spark',
+                name: '讯飞星火',
+                company: '科大讯飞',
+                icon: '🔥',
+                color: '#F59E0B',
+                description: '科大讯飞推出的认知智能大模型，在语音、语言、教育领域有独特优势。',
+                features: [
+                    '语音交互：业界领先的语音AI',
+                    '教育赋能：深耕教育领域多年',
+                    '多语言：支持多种语言互译',
+                    '情感分析：情绪理解能力强'
+                ],
+                useCases: [
+                    '语音助手和智能对话',
+                    '教育辅助和作文批改',
+                    '多语言翻译',
+                    '情感分析和客服'
+                ],
+                pricing: '免费基础版 / V4.0版本需付费订阅',
+                link: 'https://xinghuo.xfyun.cn',
+                tips: '讯飞的语音合成效果非常自然，建议体验语音模式'
+            },
+            {
+                id: 'chatglm',
+                name: '智谱清言',
+                company: '智谱AI',
+                icon: '🧠',
+                color: '#10B981',
+                description: '智谱AI研发的开源对话模型，支持中英双语，在推理任务上表现优秀。',
+                features: [
+                    '开源友好：提供开源版本',
+                    '推理强大：逻辑推理能力突出',
+                    '多语言：中英双语支持',
+                    '工具调用：支持插件和工具'
+                ],
+                useCases: [
+                    '学术研究和论文写作',
+                    '代码生成和调试',
+                    '多语言对话翻译',
+                    '复杂问题分析'
+                ],
+                pricing: '免费使用 / API按token计费',
+                link: 'https://chatglm.cn',
+                tips: 'GLM-4模型在复杂推理任务上表现优异'
+            },
+            {
+                id: 'kimi',
+                name: 'Kimi',
+                company: '月之暗面',
+                icon: '🌙',
+                color: '#6366F1',
+                description: '支持超长上下文窗口的AI助手，单次可处理200万字，适合长文档处理。',
+                features: [
+                    '超长文本：200万字上下文',
+                    '长文档：PDF、Word直接解析',
+                    '联网搜索：实时获取信息',
+                    '文件处理：多文件同时分析'
+                ],
+                useCases: [
+                    '长篇小说和论文阅读',
+                    '合同和法律文档分析',
+                    '多文档对比总结',
+                    '长对话历史理解'
+                ],
+                pricing: '基础用户20万字 / 付费用户200万字',
+                link: 'https://kimi.moonshot.cn',
+                tips: '特别适合处理长文档，PDF文件直接上传就能分析'
+            },
+            {
+                id: 'hunyuan',
+                name: '腾讯混元',
+                company: '腾讯',
+                icon: '🐧',
+                color: '#F97316',
+                description: '腾讯推出的大模型，与腾讯生态深度整合，支持多场景应用。',
+                features: [
+                    '生态整合：完美接入腾讯云',
+                    '多模态：图像、视频生成',
+                    '社交场景：适合内容创作',
+                    '游戏赋能：游戏AI解决方案'
+                ],
+                useCases: [
+                    '社交媒体内容创作',
+                    '广告创意和文案',
+                    '游戏NPC和对话',
+                    '企业级智能应用'
+                ],
+                pricing: '免费试用 / API按量计费',
+                link: 'https://hunyuan.tencent.com',
+                tips: '与微信生态打通，可在公众号中接入使用'
+            },
+            {
+                id: 'doubao',
+                name: '豆包',
+                company: '字节跳动',
+                icon: '🫛',
+                color: '#EF4444',
+                description: '字节跳动推出的AI助手，主打免费使用，在创意写作和社交方面表现优秀。',
+                features: [
+                    '完全免费：无限制使用',
+                    '语音交互：自然流畅的语音对话',
+                    '创意写作：文案、脚本、小说',
+                    '图像生成：支持AI绘图'
+                ],
+                useCases: [
+                    '日常对话和问答',
+                    '文案和创意写作',
+                    '学习辅导和知识查询',
+                    '图像生成和编辑'
+                ],
+                pricing: '完全免费',
+                link: 'https://www.doubao.com',
+                tips: '完全免费且不限次数，语音模式体验很好'
+            },
+            {
+                id: 'shangliang',
+                name: '商量',
+                company: '商汤科技',
+                icon: '⚖️',
+                color: '#8B5CF6',
+                description: '商汤科技推出的日日新大模型系列之一，在代码和视觉领域有独特优势。',
+                features: [
+                    '代码能力：专业的编程助手',
+                    '视觉理解：图像分析能力强',
+                    '多模态：图像、视频、3D',
+                    '大模型矩阵：多种模型组合'
+                ],
+                useCases: [
+                    '代码编写和调试',
+                    '图像识别和分析',
+                    '视频内容理解',
+                    'AI应用开发'
+                ],
+                pricing: '免费体验 / API按量计费',
+                link: 'https://www.sensetime.com/cn/sensetime-ai',
+                tips: '在代码和图像理解方面专业性较强'
+            },
+            {
+                id: 'baichuan',
+                name: '百川智能',
+                company: '百川智能',
+                icon: '🏔️',
+                color: '#0EA5E9',
+                description: '王小川创立的大模型公司，专注中文大模型研发，在搜索和知识领域有积累。',
+                features: [
+                    '中文优化：深厚的中文能力',
+                    '知识检索：增强的检索能力',
+                    '开源版本：提供开源模型',
+                    '搜索增强：结合搜索技术'
+                ],
+                useCases: [
+                    '知识问答和检索',
+                    '文档理解和总结',
+                    '内容创作辅助',
+                    '搜索增强对话'
+                ],
+                pricing: '免费使用 / API按量计费',
+                link: 'https://www.baichuan.com',
+                tips: '百川的中文理解能力在某些场景下表现突出'
+            },
+            {
+                id: 'lingyi',
+                name: '零一万物',
+                company: '零一万物',
+                icon: '✨',
+                color: '#F43F5E',
+                description: '李开复创办的AI公司，推出的一站式AI工作平台，支持多模型切换。',
+                features: [
+                    '多模型聚合：整合多种模型',
+                    '一站式：工作台集成',
+                    '效率工具：文档、表格处理',
+                    '开放平台：丰富的API'
+                ],
+                useCases: [
+                    '一站式AI工作平台',
+                    '文档处理和分析',
+                    '多模型对比使用',
+                    '企业AI转型'
+                ],
+                pricing: '免费基础版 / 付费版功能更强',
+                link: 'https://www.01.ai',
+                tips: '平台集成度高，适合作为日常AI工作入口'
+            },
+            {
+                id: 'minimax',
+                name: '海螺AI',
+                company: '稀宇科技/MiniMax',
+                icon: '🌊',
+                color: '#06B6D4',
+                description: 'MiniMax推出的AI助手，在角色扮演和情感对话方面表现优秀。',
+                features: [
+                    '角色扮演：丰富的角色库',
+                    '情感陪伴：情感对话能力',
+                    '创意写作：故事和脚本',
+                    '多轮对话：连贯的对话体验'
+                ],
+                useCases: [
+                    '角色扮演和虚拟伴侣',
+                    '创意故事和小说',
+                    '情感咨询和陪伴',
+                    '剧本和脚本创作'
+                ],
+                pricing: '免费基础版',
+                link: 'https://www.hailuo.ai',
+                tips: '角色扮演和情感对话体验很好，适合创意写作'
+            },
+            {
+                id: 'deepseek',
+                name: 'DeepSeek',
+                company: '深度求索',
+                icon: '🔍',
+                color: '#3B82F6',
+                description: '专注通用人工智能，推出的代码和数学推理能力超强的模型。',
+                features: [
+                    '代码能力：接近GPT-4水平',
+                    '数学推理：数学计算能力强',
+                    '开源友好：开源模型可商用',
+                    '性价比：API价格实惠'
+                ],
+                useCases: [
+                    '代码生成和优化',
+                    '数学问题求解',
+                    '技术文档编写',
+                    'AI编程助手'
+                ],
+                pricing: 'API价格极具性价比',
+                link: 'https://www.deepseek.com',
+                tips: '代码能力非常强，API价格便宜'
+            }
+        ];
+        
+        // Render Models
+        function renderModels(filter = '') {
+            const grid = document.getElementById('modelsGrid');
+            grid.innerHTML = '';
+            
+            const filtered = models.filter(m => 
+                m.name.toLowerCase().includes(filter.toLowerCase()) ||
+                m.company.toLowerCase().includes(filter.toLowerCase()) ||
+                m.description.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            filtered.forEach(model => {
+                const card = document.createElement('div');
+                card.className = 'model-card';
+                card.onclick = () => openModal(model);
+                
+                card.innerHTML = `
+                    <div class="model-icon" style="background: ${model.color}20; color: ${model.color};">
+                        ${model.icon}
+                    </div>
+                    <h3>${model.name}</h3>
+                    <div class="company">${model.company}</div>
+                    <p>${model.description}</p>
+                    <div class="tags">
+                        ${model.features.slice(0, 3).map(f => `<span class="tag">${f}</span>`).join('')}
+                    </div>
+                    <a href="${model.link}" target="_blank" class="model-link" onclick="event.stopPropagation()">
+                        了解更多 →
+                    </a>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        // Modal Functions
+        function openModal(model) {
+            document.getElementById('modalTitle').textContent = `${model.icon} ${model.name}`;
+            document.getElementById('modalCompany').textContent = model.company;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="modal-section">
+                    <h3>📝 模型介绍</h3>
+                    <p>${model.description}</p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>✨ 核心特性</h3>
+                    <div class="feature-grid">
+                        ${model.features.map(f => `
+                            <div class="feature-item">
+                                <h4>${f.split('：')[0]}</h4>
+                                <p>${f.split('：')[1]}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>🎯 适用场景</h3>
+                    <ul>
+                        ${model.useCases.map(uc => `<li>${uc}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>💰 定价方式</h3>
+                    <div class="pricing-card">
+                        <p style="margin-bottom: 10px;">${model.company} ${model.name}</p>
+                        <div class="price">${model.pricing.split('/')[0]}</div>
+                        <p style="margin-top: 15px; font-size: 14px;">${model.pricing.split('/')[1] || ''}</p>
+                    </div>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>💡 使用建议</h3>
+                    <p style="color: #00d4ff;">${model.tips}</p>
+                </div>
+                
+                <div class="modal-section">
+                    <h3>🔗 官方链接</h3>
+                    <a href="${model.link}" target="_blank" class="btn btn-primary" style="text-decoration: none;">
+                        立即体验 ${model.name} →
+                    </a>
+                </div>
+            `;
+            
+            document.getElementById('modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // Close modal on backdrop click
+        document.getElementById('modal').onclick = function(e) {
+            if (e.target === this) closeModal();
+        };
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+        
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            renderModels(e.target.value);
+        });
+        
+        // Initial render
+        renderModels();
+    </script>
+</body>
+</html>

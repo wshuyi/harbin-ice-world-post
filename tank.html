@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>坦克大战 🛡️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            color: #eee;
+            overflow: hidden;
+        }
+        h1 {
+            margin-bottom: 15px;
+            font-size: 2rem;
+            text-shadow: 0 0 10px #00ff88;
+        }
+        #game {
+            border: 3px solid #00ff88;
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            background: #0a0a15;
+        }
+        .info {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            gap: 30px;
+        }
+        .score { color: #00ff88; font-weight: bold; }
+        .level { color: #ffd93d; }
+        .lives { color: #ff6b6b; }
+        .controls {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>🛡️ 坦克大战</h1>
+    <canvas id="game" width="600" height="500"></canvas>
+    <div class="info">
+        <span>得分: <span class="score" id="score">0</span></span>
+        <span>关卡: <span class="level" id="level">1</span></span>
+        <span>生命: <span class="lives" id="lives">3</span></span>
+    </div>
+    <div class="controls">
+        方向键移动 | 空格射击 | Enter 重新开始
+    </div>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        
+        const GRID = 20;
+        const COLS = canvas.width / GRID;
+        const ROWS = canvas.height / GRID;
+        
+        // 游戏状态
+        let player = { x: 1, y: ROWS - 2, dir: 0, alive: true };
+        let bullets = [];
+        let enemies = [];
+        let walls = [];
+        let score = 0;
+        let level = 1;
+        let lives = 3;
+        let gameOver = false;
+        let gameLoop = null;
+        
+        // 方向: 0=上, 1=右, 2=下, 3=左
+        const DIR = [{x:0,y:-1}, {x:1,y:0}, {x:0,y:1}, {x:-1,y:0}];
+        
+        function initLevel() {
+            walls = [];
+            // 边界墙
+            for (let x = 0; x < COLS; x++) {
+                walls.push({x, y: 0});
+                walls.push({x, y: ROWS-1});
+            }
+            for (let y = 1; y < ROWS-1; y++) {
+                walls.push({x: 0, y});
+                walls.push({x: COLS-1, y});
+            }
+            // 随机障碍墙
+            for (let i = 0; i < 15 + level * 3; i++) {
+                let wx = Math.floor(Math.random() * (COLS - 4)) + 2;
+                let wy = Math.floor(Math.random() * (ROWS - 6)) + 2;
+                if (wx > 3 || wy < ROWS - 4) {
+                    walls.push({x: wx, y: wy});
+                }
+            }
+            
+            // 玩家
+            player = { x: 1, y: ROWS - 2, dir: 0, alive: true };
+            bullets = [];
+            
+            // 敌人
+            enemies = [];
+            let enemyCount = Math.min(3 + level, 8);
+            for (let i = 0; i < enemyCount; i++) {
+                spawnEnemy();
+            }
+        }
+        
+        function spawnEnemy() {
+            let ex, ey;
+            do {
+                ex = Math.floor(Math.random() * (COLS - 2)) + 1;
+                ey = Math.floor(Math.random() * 3) + 1;
+            } while (isWall(ex, ey) || (Math.abs(ex - player.x) < 5 && Math.abs(ey - player.y) < 5));
+            enemies.push({
+                x: ex, y: ey,
+                dir: Math.floor(Math.random() * 4),
+                moveTimer: 0,
+                alive: true
+            });
+        }
+        
+        function isWall(x, y) {
+            return walls.some(w => w.x === x && w.y === y);
+        }
+        
+        function canMove(x, y) {
+            return x >= 0 && x < COLS && y >= 0 && y < ROWS && !isWall(x, y);
+        }
+        
+        function draw() {
+            // 清空
+            ctx.fillStyle = '#0a0a15';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 墙
+            ctx.fillStyle = '#444';
+            walls.forEach(w => {
+                ctx.fillRect(w.x * GRID + 1, w.y * GRID + 1, GRID - 2, GRID - 2);
+            });
+            
+            // 玩家
+            if (player.alive) {
+                drawTank(player.x, player.y, player.dir, '#00ff88', true);
+            }
+            
+            // 敌人
+            enemies.forEach(e => {
+                if (e.alive) drawTank(e.x, e.y, e.dir, '#ff6b6b', false);
+            });
+            
+            // 子弹
+            ctx.fillStyle = '#ffff00';
+            bullets.forEach(b => {
+                ctx.beginPath();
+                ctx.arc(b.x * GRID + GRID/2, b.y * GRID + GRID/2, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // 游戏结束
+            if (gameOver) {
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ff6b6b';
+                ctx.font = '40px Courier New';
+                ctx.textAlign = 'center';
+                ctx.fillText('游戏结束!', canvas.width/2, canvas.height/2);
+                ctx.fillStyle = '#fff';
+                ctx.font = '20px Courier New';
+                ctx.fillText(`最终得分: ${score}`, canvas.width/2, canvas.height/2 + 40);
+            }
+        }
+        
+        function drawTank(x, y, dir, color, isPlayer) {
+            ctx.fillStyle = color;
+            let cx = x * GRID + GRID/2;
+            let cy = y * GRID + GRID/2;
+            let size = GRID - 4;
+            
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(dir * Math.PI / 2);
+            
+            // 车身
+            ctx.fillRect(-size/2, -size/2, size, size);
+            // 炮管
+            ctx.fillRect(-3, -size/2 - 6, 6, 10);
+            // 玩家标记
+            if (isPlayer) {
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(0, 0, 4, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            ctx.restore();
+        }
+        
+        function update() {
+            if (gameOver) return;
+            
+            // 玩家子弹
+            bullets = bullets.filter(b => {
+                b.x += b.vx;
+                b.y += b.vy;
+                
+                // 撞墙
+                if (isWall(Math.floor(b.x), Math.floor(b.y))) return false;
+                
+                // 撞敌人
+                for (let e of enemies) {
+                    if (e.alive && Math.floor(b.x) === e.x && Math.floor(b.y) === e.y) {
+                        e.alive = false;
+                        score += 100;
+                        document.getElementById('score').textContent = score;
+                        return false;
+                    }
+                }
+                
+                // 撞玩家
+                if (player.alive && Math.floor(b.x) === player.x && Math.floor(b.y) === player.y) {
+                    playerHit();
+                    return false;
+                }
+                
+                return b.x >= 0 && b.x < COLS && b.y >= 0 && b.y < ROWS;
+            });
+            
+            // 敌人移动
+            enemies.forEach(e => {
+                if (!e.alive) return;
+                e.moveTimer++;
+                if (e.moveTimer > 30) {
+                    e.moveTimer = 0;
+                    // 随机转向或移动
+                    if (Math.random() < 0.3) {
+                        e.dir = Math.floor(Math.random() * 4);
+                    }
+                    let next = DIR[e.dir];
+                    if (canMove(e.x + next.x, e.y + next.y)) {
+                        e.x += next.x;
+                        e.y += next.y;
+                    }
+                }
+                
+                // 敌人射击
+                if (Math.random() < 0.02 && player.alive) {
+                    let v = DIR[e.dir];
+                    bullets.push({
+                        x: e.x + 0.5,
+                        y: e.y + 0.5,
+                        vx: v.x * 0.5,
+                        vy: v.y * 0.5,
+                        isPlayer: false
+                    });
+                }
+                
+                // 撞玩家
+                if (player.alive && e.x === player.x && e.y === player.y) {
+                    playerHit();
+                }
+            });
+            
+            // 清理死亡敌人并生成新的
+            enemies = enemies.filter(e => e.alive);
+            while (enemies.length < Math.min(3 + level, 8)) {
+                spawnEnemy();
+            }
+            
+            // 过关
+            if (enemies.length === 0) {
+                level++;
+                document.getElementById('level').textContent = level;
+                initLevel();
+            }
+        }
+        
+        function playerHit() {
+            lives--;
+            document.getElementById('lives').textContent = lives;
+            if (lives <= 0) {
+                gameOver = true;
+                clearInterval(gameLoop);
+            } else {
+                player.x = 1;
+                player.y = ROWS - 2;
+                player.dir = 0;
+                bullets = [];
+            }
+        }
+        
+        function shoot() {
+            if (!player.alive || gameOver) return;
+            let v = DIR[player.dir];
+            bullets.push({
+                x: player.x + 0.5,
+                y: player.y + 0.5,
+                vx: v.x * 0.5,
+                vy: v.y * 0.5,
+                isPlayer: true
+            });
+        }
+        
+        // 键盘控制
+        document.addEventListener('keydown', e => {
+            // 空格键 - 射击（优先处理）
+            if (e.key === ' ' && !e.repeat) {
+                e.preventDefault();
+                if (!gameOver) {
+                    shoot();
+                }
+                return;
+            }
+            
+            // Enter - 重新开始
+            if (e.key === 'Enter') {
+                if (gameOver) {
+                    score = 0;
+                    level = 1;
+                    lives = 3;
+                    gameOver = false;
+                    document.getElementById('score').textContent = score;
+                    document.getElementById('level').textContent = level;
+                    document.getElementById('lives').textContent = lives;
+                    initLevel();
+                    gameLoop = setInterval(() => { update(); draw(); }, 50);
+                }
+                return;
+            }
+            
+            // 方向键 - 移动
+            if (!player.alive || gameOver) return;
+            
+            switch(e.key) {
+                case 'ArrowUp':
+                    if (DIR[player.dir].y !== 1) player.dir = 0;
+                    if (canMove(player.x + DIR[0].x, player.y + DIR[0].y)) {
+                        player.x += DIR[0].x; player.y += DIR[0].y;
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (DIR[player.dir].y !== -1) player.dir = 2;
+                    if (canMove(player.x + DIR[2].x, player.y + DIR[2].y)) {
+                        player.x += DIR[2].x; player.y += DIR[2].y;
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (DIR[player.dir].x !== 1) player.dir = 3;
+                    if (canMove(player.x + DIR[3].x, player.y + DIR[3].y)) {
+                        player.x += DIR[3].x; player.y += DIR[3].y;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (DIR[player.dir].x !== -1) player.dir = 1;
+                    if (canMove(player.x + DIR[1].x, player.y + DIR[1].y)) {
+                        player.x += DIR[1].x; player.y += DIR[1].y;
+                    }
+                    break;
+            }
+        });
+        
+        // 开始游戏
+        initLevel();
+        gameLoop = setInterval(() => { update(); draw(); }, 50);
+    </script>
+</body>
+</html>

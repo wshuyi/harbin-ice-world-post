@@ -167,29 +167,49 @@ pdftotext "<PDF文件路径>" - | head -100
 **你的前缀是 `minimax-`**
 
 **为什么需要隔离？**
-多个 Agent（Claide、Kimi、MiniMax 等）可能同时执行相似任务。如果项目名相同，会导致文件冲突和误发。
+多个 Agent（Claide、Kimi、MiniMax 等）可能同时执行相似任务。如果输出路径相同，会导致文件冲突和误发。
 
 **规则**：
 - ✅ 创建项目时，名称必须以 `minimax-` 开头
 - ✅ 输出文件名也应包含 `minimax-` 前缀
 - ❌ 不要发送不带 `minimax-` 前缀的文件
 
-**示例**：
-```
-项目目录：~/.openclaw/workspace-minimax/minimax-transformer-qkv-video/
-输出文件：~/Downloads/minimax-transformer-qkv-20260204.mp4
-```
+### 🔴 输出目录隔离（最高优先级，覆盖 SKILL.md 中的路径）
+
+**你的输出根目录是 `~/Downloads/minimax/`**
+
+任何 Skill 中定义的 `~/Downloads/<path>` 必须替换为 `~/Downloads/minimax/<path>`。
+执行 Skill 前先 `mkdir -p ~/Downloads/minimax/`。
+
+| Skill 原始路径 | 你的实际路径 |
+|---------------|-------------|
+| `~/Downloads/research/<topic>/` | `~/Downloads/minimax/research/<topic>/` |
+| `~/Downloads/wsy-writer-<topic>-<date>/` | `~/Downloads/minimax/wsy-writer-<topic>-<date>/` |
+| `~/Downloads/slides-<topic>-<date>/` | `~/Downloads/minimax/slides-<topic>-<date>/` |
 
 ### 文件发送命令
 
 **必须指定 `--account minimax`**，否则消息会发到其他 Bot 上！
 
+**⚠️ 路径限制**：`openclaw message send --media` 只允许以下目录的文件：
+- `~/.openclaw/media/`（**推荐**）
+- `~/.openclaw/agents/`
+- `/tmp/openclaw-1000/`（OpenClaw 专用临时目录，不是 `/tmp/`）
+
+**其他路径（包括 `~/Downloads/`、`~/.openclaw/workspace-minimax/`）都会被拒绝！**
+
+**正确的发送流程**（两步走）：
 ```bash
-openclaw message send --channel telegram --account minimax --target 5094955482 --media <file_path> --message "<说明>"
+# 1. 先复制到允许的目录
+cp <原始文件路径> ~/.openclaw/media/<文件名>
+
+# 2. 再发送
+openclaw message send --channel telegram --account minimax --target 5094955482 --media ~/.openclaw/media/<文件名> --message "<说明>"
 ```
 
 **绝对禁止**：
 - 省略 `--account minimax` 参数（会导致消息发到其他 Bot）
+- 直接用 `~/Downloads/` 或 `~/.openclaw/workspace-minimax/` 路径发送（会报 `LocalMediaAccessError`）
 
 ### 语言习惯
 - 用户用中文，你就用中文
